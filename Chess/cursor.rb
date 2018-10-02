@@ -1,5 +1,5 @@
 require "io/console"
-
+require "byebug"
 KEYMAP = {
   " " => :space,
   "h" => :left,
@@ -33,6 +33,7 @@ MOVES = {
 class Cursor
 
   attr_reader :cursor_pos, :board
+  attr_writer :cursor_pos
 
   def initialize(cursor_pos, board)
     @cursor_pos = cursor_pos
@@ -77,18 +78,19 @@ class Cursor
 
   def handle_key(key)
     case key
-    when :return || :space
-      @cursor_pos
-    when :left || :right || :up || :down
-      update_pos(MOVES[key]) #check for balid position
+    when :return, :space
+      self.cursor_pos
+    when :left, :right, :up, :down
+      update_pos(MOVES[key]) #check for valid position
     when :ctrl_c
       Process.exit(0)
     end
   end
 
   def update_pos(diff)
-    @cursor_pos[0] = @cursor_pos[0] + diff[0]
-    @cursor_pos[1] = @cursor_pos[1] + diff[1]
+    new_pos = [(self.cursor_pos[0] + diff[0]), (self.cursor_pos[1] + diff[1])]
+    # debugger
+    self.cursor_pos = new_pos if board.valid_pos?(new_pos)
   end
 
 
